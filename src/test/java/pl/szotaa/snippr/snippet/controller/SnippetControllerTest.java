@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.snippet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import pl.szotaa.snippr.snippet.service.SnippetService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SnippetController.class)
-@Slf4j
 public class SnippetControllerTest {
 
     @Autowired
@@ -46,18 +44,14 @@ public class SnippetControllerTest {
 
     @Test
     public void createTest() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String exampleSnippetAsJson = objectMapper.writeValueAsString(exampleSnippet);
-
         mockMvc.perform(MockMvcRequestBuilders.post("/snippet")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(exampleSnippetAsJson))
+                .content(asJsonString(exampleSnippet)))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     public void getByIdSuccessTest() throws Exception {
-
         Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/snippet/{id}", 1))
@@ -79,22 +73,50 @@ public class SnippetControllerTest {
     @Test
     public void updateSuccessTest() throws Exception {
         Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
-        //TODO: test logic
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void updateFailureTest() throws Exception {
-        //TODO: test logic
+        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     public void deleteSuccessTest() throws Exception {
-        //TODO: test logic
+        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void deleteFailureTest() throws Exception {
-        //TODO: test logic
+        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    private static String asJsonString(final Object object) {
+        try{
+            return new ObjectMapper().writeValueAsString(object);
+        }
+        catch (Exception e){
+            throw new RuntimeException();
+        }
     }
 
 }
