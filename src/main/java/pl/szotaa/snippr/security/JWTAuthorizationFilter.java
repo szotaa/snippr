@@ -24,13 +24,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String header = request.getHeader(HEADER_STRING);
-
-        if(header == null || !header.startsWith(TOKEN_PREFIX)){
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
-            return;
-        }
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) throws IOException, ServletException {
 
         UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -41,7 +37,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(HEADER_STRING);
         if(token != null){
             String user = Jwts.parser()
-                    .setSigningKey(SECRET.getBytes())
+                    /*.setSigningKey(SECRET.getBytes())*/
                     .parseClaimsJwt(token.replace(TOKEN_PREFIX, ""))
                     .getBody()
                     .getSubject();

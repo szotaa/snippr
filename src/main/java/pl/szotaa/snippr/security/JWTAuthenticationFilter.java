@@ -57,8 +57,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = Jwts.builder()
                 .setSubject(((User) authResult.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
+                /*.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())*/ //TODO: find out why exception is thrown with signed claims
                 .compact();
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + token);
     }
 }
