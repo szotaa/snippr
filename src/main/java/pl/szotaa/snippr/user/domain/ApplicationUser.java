@@ -2,23 +2,30 @@ package pl.szotaa.snippr.user.domain;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationUser {
+@Table(name = "user")
+public class ApplicationUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "username")
     private String username;
 
     private String password;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+                joinColumns = @JoinColumn(name = "user", referencedColumnName = "username"),
+                inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role_name"))
+    private Set<Role> roles;
 }
