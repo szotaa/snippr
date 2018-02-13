@@ -2,27 +2,22 @@ package pl.szotaa.snippr.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import pl.szotaa.snippr.user.domain.Role;
-import pl.szotaa.snippr.user.repository.RoleRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import static pl.szotaa.snippr.security.SecurityConstants.HEADER_STRING;
-import static pl.szotaa.snippr.security.SecurityConstants.SECRET;
 import static pl.szotaa.snippr.security.SecurityConstants.TOKEN_PREFIX;
 
 //TODO: code cleanup

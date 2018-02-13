@@ -13,11 +13,13 @@ import pl.szotaa.snippr.user.domain.Role;
 import pl.szotaa.snippr.user.repository.ApplicationUserRepository;
 import pl.szotaa.snippr.user.repository.RoleRepository;
 
+import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 
 @Slf4j
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class ApplicationUserService implements UserDetailsService {
 
@@ -40,5 +42,9 @@ public class ApplicationUserService implements UserDetailsService {
         Role role = roleRepository.findOne(2L);
         applicationUser.setRoles(Collections.singleton(role));
         applicationUserRepository.save(applicationUser);
+    }
+
+    public ApplicationUser getByUsername(String username){
+        return applicationUserRepository.findByUsername(username);
     }
 }
