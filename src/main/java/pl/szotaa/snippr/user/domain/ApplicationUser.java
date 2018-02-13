@@ -16,11 +16,13 @@ public class ApplicationUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false, unique = true )
     private String username;
 
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

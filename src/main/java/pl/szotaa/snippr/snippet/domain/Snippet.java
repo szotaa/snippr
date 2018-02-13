@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import pl.szotaa.snippr.user.domain.ApplicationUser;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -19,9 +23,26 @@ public class Snippet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
+    @NotNull
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Lob
+    @NotNull
+    @Column(name = "content", nullable = false)
     private String content;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ApplicationUser owner;
+
+    @CreationTimestamp
+    @Column(name = "date_added", nullable = false)
+    private Instant dateAdded;
+
+    @UpdateTimestamp
+    @Column(name = "last_modified", nullable = false)
+    private Instant lastModified;
 }
