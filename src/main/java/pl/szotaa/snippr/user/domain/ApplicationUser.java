@@ -1,6 +1,7 @@
 package pl.szotaa.snippr.user.domain;
 
 import lombok.*;
+import pl.szotaa.snippr.snippet.domain.Snippet;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,4 +31,7 @@ public class ApplicationUser implements Serializable {
                 joinColumns = @JoinColumn(name = "user", referencedColumnName = "username"),
                 inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role_name"))
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Set<Snippet> snippets;
 }

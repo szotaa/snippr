@@ -35,7 +35,8 @@ public class Snippet implements Serializable {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "owner_user_id")
     private ApplicationUser owner;
 
     @CreationTimestamp
