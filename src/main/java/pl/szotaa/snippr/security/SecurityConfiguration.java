@@ -2,6 +2,7 @@ package pl.szotaa.snippr.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -25,7 +26,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+
+                .addFilter(jwtAuthenticationFilter())
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 .csrf().disable()
                 .cors().disable()
@@ -35,5 +37,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+    }
+
+    @Bean
+    public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception{
+        JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authenticationManager());
+        authenticationFilter.setFilterProcessesUrl("/user/login");
+        return authenticationFilter;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }
