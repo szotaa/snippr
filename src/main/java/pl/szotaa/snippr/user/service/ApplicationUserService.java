@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.domain.Role;
@@ -22,6 +23,7 @@ public class ApplicationUserService implements UserDetailsService {
 
     private final ApplicationUserRepository applicationUserRepository;
     private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -36,6 +38,7 @@ public class ApplicationUserService implements UserDetailsService {
     public void save(ApplicationUser applicationUser){
         Role role = roleRepository.findOne(2L);
         applicationUser.setRoles(Collections.singleton(role));
+        applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
         applicationUserRepository.save(applicationUser);
     }
 
@@ -57,5 +60,9 @@ public class ApplicationUserService implements UserDetailsService {
 
     public boolean exists(Long id){
         return applicationUserRepository.exists(id);
+    }
+
+    public boolean exists(String username){
+        return applicationUserRepository.existsByUsername(username);
     }
 }

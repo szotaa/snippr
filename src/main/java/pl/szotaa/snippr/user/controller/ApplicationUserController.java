@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/user")
@@ -15,13 +17,15 @@ import pl.szotaa.snippr.user.service.ApplicationUserService;
 public class ApplicationUserController {
 
     private final ApplicationUserService applicationUserService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<Void> signUp(@RequestBody ApplicationUser applicationUser){
-        applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
+        if(applicationUserService.exists(applicationUser.getUsername())){
+            return ResponseEntity.badRequest().build();
+        }
         applicationUserService.save(applicationUser);
-        return ResponseEntity.ok().build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(applicationUser.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{id}")
