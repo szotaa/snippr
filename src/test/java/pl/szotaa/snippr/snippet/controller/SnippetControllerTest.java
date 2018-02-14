@@ -74,7 +74,7 @@ public class SnippetControllerTest {
 
     @Test
     public void updateSuccessTest() throws Exception {
-        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
+        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ public class SnippetControllerTest {
 
     @Test
     public void updateFailureTest() throws Exception {
-        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ public class SnippetControllerTest {
 
     @Test
     public void deleteSuccessTest() throws Exception {
-        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
+        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class SnippetControllerTest {
 
     @Test
     public void deleteFailureTest() throws Exception {
-        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)

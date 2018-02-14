@@ -43,7 +43,7 @@ public class SnippetController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
     public ResponseEntity<?> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet){
-        if(snippetService.exists(id)){
+        if(!snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
         snippet.setId(id);
@@ -55,7 +55,7 @@ public class SnippetController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
     public ResponseEntity deleteExisting(@PathVariable Long id){
-        if(snippetService.exists(id)){
+        if(!snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
         snippetService.delete(id);
