@@ -44,4 +44,8 @@ public class SnippetService {
     public void delete(Long id){
         snippetRepository.delete(id);
     }
+
+    public boolean exists(Long id){
+        return snippetRepository.exists(id);
+    }
 }

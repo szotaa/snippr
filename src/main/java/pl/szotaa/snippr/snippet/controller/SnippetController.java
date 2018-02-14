@@ -41,9 +41,9 @@ public class SnippetController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
-            "hasRole('ROLE_USER') and @securityExpressions.isEntityOwner(#id, authentication)")
+            "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
     public ResponseEntity<?> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet){
-        if(snippetService.getById(id) == null){
+        if(snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
         snippet.setId(id);
@@ -53,9 +53,9 @@ public class SnippetController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
-            "hasRole('ROLE_USER') and @securityExpressions.isEntityOwner(#id, authentication)")
+            "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
     public ResponseEntity deleteExisting(@PathVariable Long id){
-        if(snippetService.getById(id) == null){
+        if(snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
         snippetService.delete(id);
