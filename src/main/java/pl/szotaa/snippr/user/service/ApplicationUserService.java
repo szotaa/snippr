@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.user.service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +14,7 @@ import pl.szotaa.snippr.user.repository.RoleRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
-import java.util.HashSet;
 
-@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
@@ -33,8 +30,6 @@ public class ApplicationUserService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        log.info("loadUserByUsername(): " + applicationUser.toString());
-
         return new User(applicationUser.getUsername(), applicationUser.getPassword(), applicationUser.getRoles());
     }
 
@@ -46,5 +41,21 @@ public class ApplicationUserService implements UserDetailsService {
 
     public ApplicationUser getByUsername(String username){
         return applicationUserRepository.findByUsername(username);
+    }
+
+    public ApplicationUser getById(Long id){
+        return applicationUserRepository.findOne(id);
+    }
+
+    public void update(ApplicationUser applicationUser){
+        applicationUserRepository.save(applicationUser);
+    }
+
+    public void delete(Long id){
+        applicationUserRepository.delete(id);
+    }
+
+    public boolean exists(Long id){
+        return applicationUserRepository.exists(id);
     }
 }

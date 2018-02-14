@@ -25,22 +25,37 @@ public class ApplicationUserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " +
+            "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
     public ResponseEntity<ApplicationUser> getUser(@PathVariable Long id){
-        return null;
+        ApplicationUser result = applicationUserService.getById(id);
+        if(result == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
-            "hasRole('ROLE_USER') and @securityExpressions.isEntityOwner(#id, authentication)")
-    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody ApplicationUser user){
-        return null;
+            "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody ApplicationUser applicationUser){
+        if(!applicationUserService.exists(id)){
+            return ResponseEntity.notFound().build();
+        }
+        applicationUser.setId(id);
+        applicationUserService.update(applicationUser);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
-            "hasRole('ROLE_USER') and @securityExpressions.isEntityOwner(#id, authentication)")
+            "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
     public ResponseEntity<Void> deleteExisting(@PathVariable Long id){
-        return null;
+        if(!applicationUserService.exists(id)){
+            return ResponseEntity.notFound().build();
+        }
+        applicationUserService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
 
