@@ -37,6 +37,12 @@ public class Snippet implements Serializable {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ProgrammingLanguage syntaxHighlighting;
+
+    private Instant expiryDate;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "owner_user_id")
