@@ -3,6 +3,7 @@ package pl.szotaa.snippr.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,15 +62,16 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = Jwts.builder()
                 .setClaims(buildClaims(user))
-                /*.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())*/ //TODO: find out why exception is thrown with signed claims
+                /*.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())*/ //TODO: find out why signed claims jws throw exception
                 .compact();
+
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + token);
     }
 
     private Claims buildClaims(User user){
         Claims claims = Jwts.claims();
         claims.setSubject(user.getUsername());
-        claims.setExpiration(new Date((System.currentTimeMillis() + EXPIRATION_TIME)));
+        claims.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME));
         claims.put("roles", authoritiesToString(user.getAuthorities()));
         return claims;
     }

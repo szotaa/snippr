@@ -2,7 +2,6 @@ package pl.szotaa.snippr.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +16,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static pl.szotaa.snippr.security.SecurityConstants.HEADER_STRING;
-import static pl.szotaa.snippr.security.SecurityConstants.TOKEN_PREFIX;
+import static pl.szotaa.snippr.security.SecurityConstants.*;
 
 //TODO: code cleanup
 
-@Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
@@ -34,6 +31,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
 
+        String header = request.getHeader(HEADER_STRING);
+
+        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         chain.doFilter(request, response);
@@ -44,37 +48,36 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         if(token != null){
 
 
-            Claims claims = Jwts.parser().parseClaimsJwt(token.replace(TOKEN_PREFIX, "")).getBody();
+            Claims claims = Jwts.parser()
+                    /*.setSigningKey(SECRET.getBytes())*/ //TODO: find out why signing claims throws exception
+                    .parseClaimsJwt(token.replace(TOKEN_PREFIX, ""))
+                    .getBody();
+
             String username = claims.getSubject();
 
-            log.info("claims: " + claims.toString() + "\n + roles:" + claims.get("roles"));
-
-            Set<Role> roles = new HashSet<>();
-
-            if(claims.get("roles").toString().contains("ROLE_USER")){
-                Role role = new Role();
-                role.setId(2L);
-                role.setRoleName("ROLE_USER");
-                roles.add(role);
-                log.info("added role user");
-            }
-
-            if(claims.get("roles").toString().contains("ROLE_ADMIN")){
-                Role role = new Role();
-                role.setId(1L);
-                role.setRoleName("ROLE_ADMIN");
-                roles.add(role);
-                log.info("added role admin");
-            }
-
-
             if(username != null){
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, roles);
-                log.info(authenticationToken.toString());
-                return authenticationToken;
+                return new UsernamePasswordAuthenticationToken(username, null, buildRoleSet(claims));
             }
             return null;
         }
         return null;
+    }
+
+    private Set<Role> buildRoleSet(Claims claims){
+        Set<Role> roles = new HashSet<>();
+
+        if(claims.get("roles").toString().contains("ROLE_USER")){
+            Role role = new Role();
+            role.setRoleName("ROLE_USER");
+            roles.add(role);
+        }
+
+        if(claims.get("roles").toString().contains("ROLE_ADMIN")){
+            Role role = new Role();
+            role.setRoleName("ROLE_ADMIN");
+            roles.add(role);
+        }
+
+        return roles;
     }
 }
