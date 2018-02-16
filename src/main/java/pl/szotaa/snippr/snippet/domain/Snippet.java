@@ -1,5 +1,6 @@
 package pl.szotaa.snippr.snippet.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,7 @@ import java.time.Instant;
 public class Snippet implements Serializable {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
@@ -36,13 +38,16 @@ public class Snippet implements Serializable {
     private String content;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "owner_user_id")
     private ApplicationUser owner;
 
+    @JsonIgnore
     @CreationTimestamp
     @Column(name = "date_added", nullable = false)
     private Instant dateAdded;
 
+    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
     private Instant lastModified;
