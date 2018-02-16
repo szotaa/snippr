@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import pl.szotaa.snippr.snippet.validation.NotBeforeCurrentTime;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 
 import javax.persistence.*;
@@ -41,6 +42,7 @@ public class Snippet implements Serializable {
     @Enumerated(EnumType.STRING)
     private ProgrammingLanguage syntaxHighlighting;
 
+    @NotBeforeCurrentTime
     private Instant expiryDate;
 
     @ManyToOne

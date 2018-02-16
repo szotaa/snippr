@@ -1,18 +1,22 @@
 package pl.szotaa.snippr.snippet.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 import pl.szotaa.snippr.snippet.service.SnippetService;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 //TODO: validation
 
+@Slf4j
 @RestController
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @RequestMapping("/snippet")
@@ -22,7 +26,13 @@ public class SnippetController {
 
     @PostMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> create(@RequestBody Snippet snippet){
+    public ResponseEntity<Void> create(@RequestBody @Valid Snippet snippet, BindingResult bindingResult){
+
+        if(bindingResult.hasErrors()){
+            log.info("binding had errors");
+            return ResponseEntity.badRequest().build();
+        }
+
         snippetService.save(snippet);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(snippet.getId()).toUri();
