@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,13 +19,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
 import static pl.szotaa.snippr.security.SecurityConstants.*;
 
 @AllArgsConstructor
-@Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
@@ -37,8 +36,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try{
             ApplicationUser credentials = new ObjectMapper()
                     .readValue(request.getInputStream(), ApplicationUser.class);
-
-            log.info("attempt aith: " + credentials.toString());
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -61,26 +58,29 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
         User user = (User) authResult.getPrincipal();
-        Claims claims = Jwts.claims();
-        claims.setSubject(user.getUsername());
-        claims.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME));
-        log.info("succesfulAuth: " + user.getAuthorities().toString());
-
-        StringBuilder roles = new StringBuilder();
-        for(GrantedAuthority authority : user.getAuthorities()){
-            Role role = (Role) authority;
-            roles.append(role.getRoleName());
-            roles.append(", ");//TODO: change this
-        }
-
-        log.info("roles.toString(): " + roles.toString());
-
-        claims.put("roles", roles.toString());
 
         String token = Jwts.builder()
-                .setClaims(claims)
+                .setClaims(buildClaims(user))
                 /*.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())*/ //TODO: find out why exception is thrown with signed claims
                 .compact();
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + token);
+    }
+
+    private Claims buildClaims(User user){
+        Claims claims = Jwts.claims();
+        claims.setSubject(user.getUsername());
+        claims.setExpiration(new Date((System.currentTimeMillis() + EXPIRATION_TIME)));
+        claims.put("roles", authoritiesToString(user.getAuthorities()));
+        return claims;
+    }
+
+    private String authoritiesToString(Collection<GrantedAuthority> authorities){
+        StringBuilder roles = new StringBuilder();
+        for(GrantedAuthority authority : authorities){
+            Role role = (Role) authority;
+            roles.append(role.getRoleName());
+            roles.append(" ");
+        }
+        return roles.toString();
     }
 }
