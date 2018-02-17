@@ -14,8 +14,6 @@ import pl.szotaa.snippr.snippet.service.SnippetService;
 import javax.validation.Valid;
 import java.net.URI;
 
-//TODO: validation
-
 @Slf4j
 @RestController
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
@@ -27,9 +25,7 @@ public class SnippetController {
     @PostMapping
     @PreAuthorize("permitAll()")
     public ResponseEntity<Void> create(@RequestBody @Valid Snippet snippet, BindingResult bindingResult){
-
         if(bindingResult.hasErrors()){
-            log.info("binding had errors");
             return ResponseEntity.badRequest().build();
         }
 
@@ -52,10 +48,15 @@ public class SnippetController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
-    public ResponseEntity<?> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet){
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody @Valid Snippet snippet, BindingResult bindingResult){
         if(!snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
+
+        if(bindingResult.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
+
         snippet.setId(id);
         snippetService.update(snippet);
         return ResponseEntity.ok().build();
@@ -64,7 +65,7 @@ public class SnippetController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
-    public ResponseEntity deleteExisting(@PathVariable Long id){
+    public ResponseEntity<Void> deleteExisting(@PathVariable Long id){
         if(!snippetService.exists(id)){
             return ResponseEntity.notFound().build();
         }
