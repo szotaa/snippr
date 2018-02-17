@@ -4,8 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.common.ErrorResponse;
+import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
+import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -26,6 +27,11 @@ public class SnippetControllerAdvice {
     @ExceptionHandler(SnippetNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleSnippetNotFoundException(SnippetNotFoundException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(of(exception));
+    }
+
+    @ExceptionHandler(SnippetExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleSnippetExpiredException(SnippetExpiredException exception){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(of(exception));
     }
 
     private static ErrorResponse of(ConstraintViolation<?> constraintViolation){

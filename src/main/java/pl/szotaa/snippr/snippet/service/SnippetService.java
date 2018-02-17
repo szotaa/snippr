@@ -6,12 +6,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import pl.szotaa.snippr.snippet.domain.Snippet;
+import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.repostiory.SnippetRepository;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -37,6 +39,9 @@ public class SnippetService {
         Snippet found = snippetRepository.findOne(id);
         if(found == null){
             throw new SnippetNotFoundException(id);
+        }
+        if(found.getExpiryDate().isBefore(Instant.now())){
+            throw new SnippetExpiredException(id, found.getExpiryDate());
         }
         return found;
     }
