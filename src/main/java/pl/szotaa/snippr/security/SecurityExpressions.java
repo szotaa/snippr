@@ -14,7 +14,7 @@ public class SecurityExpressions {
     private final SnippetService snippetService;
     private final ApplicationUserService applicationUserService;
 
-    public boolean isSnippetOwner(Long snippetId, Authentication authentication){
+    public boolean isSnippetOwner(Long snippetId, Authentication authentication) throws Exception {
         if(snippetService.getById(snippetId).getOwner().getUsername().equals(authentication.getName())){
             return true;
         }
