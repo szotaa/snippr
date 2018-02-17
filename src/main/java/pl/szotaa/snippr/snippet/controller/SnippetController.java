@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.snippet.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +13,6 @@ import pl.szotaa.snippr.snippet.service.SnippetService;
 import javax.validation.Valid;
 import java.net.URI;
 
-@Slf4j
 @RestController
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @RequestMapping("/snippet")
