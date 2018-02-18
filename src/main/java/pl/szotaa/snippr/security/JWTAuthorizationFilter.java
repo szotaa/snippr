@@ -16,9 +16,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static pl.szotaa.snippr.security.SecurityConstants.*;
-
-//TODO: code cleanup
+import static pl.szotaa.snippr.security.SecurityConstants.HEADER_STRING;
+import static pl.szotaa.snippr.security.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 

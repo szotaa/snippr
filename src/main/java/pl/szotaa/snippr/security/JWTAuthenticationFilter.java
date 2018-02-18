@@ -3,7 +3,6 @@ package pl.szotaa.snippr.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +23,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
-import static pl.szotaa.snippr.security.SecurityConstants.*;
+import static pl.szotaa.snippr.security.SecurityConstants.EXPIRATION_TIME;
+import static pl.szotaa.snippr.security.SecurityConstants.HEADER_STRING;
+import static pl.szotaa.snippr.security.SecurityConstants.TOKEN_PREFIX;
 
 @AllArgsConstructor
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

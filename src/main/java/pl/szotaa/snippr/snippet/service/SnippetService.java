@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.snippet.service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +15,7 @@ import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
 import javax.validation.Valid;
-import java.time.Instant;
-import java.util.List;
 
-@Slf4j
 @Service
 @Validated
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
@@ -30,12 +26,10 @@ public class SnippetService {
 
     public void save(@Valid Snippet snippet) throws ApplicationUserNotFoundException {
         if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)){
-            log.info("is authenticated");
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             ApplicationUser currentlyLoggedInUser = applicationUserService.getByUsername(username);
             snippet.setOwner(currentlyLoggedInUser);
         }
-
         snippetRepository.save(snippet);
     }
 
