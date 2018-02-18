@@ -59,4 +59,11 @@ public class Snippet implements Serializable {
     @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
     private Instant lastModified;
+
+    public boolean isExpired(){
+        if(expiryDate != null && expiryDate.isBefore(Instant.now())){
+            return true;
+        }
+        return false;
+    }
 }

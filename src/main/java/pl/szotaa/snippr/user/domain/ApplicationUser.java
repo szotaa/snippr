@@ -1,10 +1,15 @@
 package pl.szotaa.snippr.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -22,9 +27,13 @@ public class ApplicationUser implements Serializable {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true )
+    @NotNull
+    @Length(min = 5, max = 50)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @NotNull
+    @Length(min = 8, max = 60)
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 

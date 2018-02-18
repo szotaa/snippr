@@ -40,7 +40,7 @@ public class ApplicationUserService implements UserDetailsService {
     }
 
     public void save(@Valid ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException {
-        if(!applicationUserRepository.existsByUsername(applicationUser.getUsername())){
+        if(applicationUserRepository.existsByUsername(applicationUser.getUsername())){
             throw new ApplicationUserAlreadyExistsException(applicationUser.getUsername());
         }
         Role role = roleRepository.findOne(2L);

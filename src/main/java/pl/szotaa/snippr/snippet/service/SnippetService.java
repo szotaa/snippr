@@ -1,7 +1,9 @@
 package pl.szotaa.snippr.snippet.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +19,7 @@ import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Service
 @Validated
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
@@ -26,9 +29,9 @@ public class SnippetService {
     private final ApplicationUserService applicationUserService;
 
     public void save(@Valid Snippet snippet) throws ApplicationUserNotFoundException {
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(username != null){
+        if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)){
+            log.info("is authenticated");
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
             ApplicationUser currentlyLoggedInUser = applicationUserService.getByUsername(username);
             snippet.setOwner(currentlyLoggedInUser);
         }
@@ -41,7 +44,7 @@ public class SnippetService {
         if(found == null){
             throw new SnippetNotFoundException(id);
         }
-        if(found.getExpiryDate().isBefore(Instant.now())){
+        if(found.isExpired()){
             throw new SnippetExpiredException(id, found.getExpiryDate());
         }
         return found;
