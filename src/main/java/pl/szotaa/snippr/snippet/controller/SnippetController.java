@@ -7,7 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.szotaa.snippr.snippet.domain.Snippet;
+import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
+import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.service.SnippetService;
+import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 
 import java.net.URI;
 
@@ -20,7 +23,7 @@ public class SnippetController {
 
     @PostMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> create(@RequestBody Snippet snippet){
+    public ResponseEntity<Void> create(@RequestBody Snippet snippet) throws ApplicationUserNotFoundException {
         snippetService.save(snippet);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(snippet.getId()).toUri();
         return ResponseEntity.created(location).build();
@@ -28,7 +31,7 @@ public class SnippetController {
 
     @GetMapping("/{id}")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Snippet> getById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Snippet> getById(@PathVariable Long id) throws SnippetNotFoundException, SnippetExpiredException {
         Snippet result = snippetService.getById(id);
         return ResponseEntity.ok(result);
     }
@@ -36,7 +39,7 @@ public class SnippetController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
-    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet) throws Exception {
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet) throws SnippetNotFoundException {
         snippet.setId(id);
         snippetService.update(snippet);
         return ResponseEntity.ok().build();
@@ -45,7 +48,7 @@ public class SnippetController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
-    public ResponseEntity<Void> deleteExisting(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Void> deleteExisting(@PathVariable Long id) throws SnippetNotFoundException {
         snippetService.delete(id);
         return ResponseEntity.ok().build();
     }

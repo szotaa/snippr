@@ -10,6 +10,7 @@ import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.repostiory.SnippetRepository;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
+import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
 import javax.validation.Valid;
@@ -24,7 +25,7 @@ public class SnippetService {
     private final SnippetRepository snippetRepository;
     private final ApplicationUserService applicationUserService;
 
-    public void save(@Valid Snippet snippet){
+    public void save(@Valid Snippet snippet) throws ApplicationUserNotFoundException {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(username != null){
@@ -35,7 +36,7 @@ public class SnippetService {
         snippetRepository.save(snippet);
     }
 
-    public Snippet getById(Long id) throws Exception {
+    public Snippet getById(Long id) throws SnippetNotFoundException, SnippetExpiredException {
         Snippet found = snippetRepository.findOne(id);
         if(found == null){
             throw new SnippetNotFoundException(id);
@@ -46,25 +47,17 @@ public class SnippetService {
         return found;
     }
 
-    public List<Snippet> getAll(){
-        return null;
-    }
-
-    public void update(@Valid Snippet snippet) throws Exception {
+    public void update(@Valid Snippet snippet) throws SnippetNotFoundException {
         if(!snippetRepository.exists(snippet.getId())){
             throw new SnippetNotFoundException(snippet.getId());
         }
         snippetRepository.save(snippet);
     }
 
-    public void delete(Long id) throws Exception {
+    public void delete(Long id) throws SnippetNotFoundException {
         if(!snippetRepository.exists(id)){
             throw new SnippetNotFoundException(id);
         }
         snippetRepository.delete(id);
-    }
-
-    public boolean exists(Long id){
-        return snippetRepository.exists(id);
     }
 }
