@@ -1,7 +1,5 @@
 package pl.szotaa.snippr.snippet.validation;
 
-import pl.szotaa.snippr.snippet.domain.ProgrammingLanguages;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -23,5 +21,9 @@ public class ProgrammingLanguageValidator implements ConstraintValidator<Program
             }
         }
         return false;
+    }
+
+    public enum ProgrammingLanguages {
+        C, CPP, JAVA, CSHARP, PYTHON
     }
 }
