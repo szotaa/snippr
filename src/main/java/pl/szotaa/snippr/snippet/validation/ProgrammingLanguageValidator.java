@@ -23,7 +23,7 @@ public class ProgrammingLanguageValidator implements ConstraintValidator<Program
         return false;
     }
 
-    public enum ProgrammingLanguages {
+    enum ProgrammingLanguages {
         C, CPP, JAVA, CSHARP, PYTHON
     }
 }
