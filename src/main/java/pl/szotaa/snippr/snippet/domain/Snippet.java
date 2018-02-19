@@ -1,6 +1,7 @@
 package pl.szotaa.snippr.snippet.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +34,8 @@ import java.time.Instant;
 public class Snippet implements Serializable {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
@@ -54,18 +55,18 @@ public class Snippet implements Serializable {
     private Instant expiryDate;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "owner_user_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private ApplicationUser owner;
 
-    @JsonIgnore
     @CreationTimestamp
     @Column(name = "date_added", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant dateAdded;
 
-    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant lastModified;
 
     public boolean isExpired(){
