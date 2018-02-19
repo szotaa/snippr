@@ -1,7 +1,5 @@
 package pl.szotaa.snippr.snippet.domain;
 
-import com.fasterxml.jackson.datatype.jsr310.DecimalUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,16 +13,15 @@ import pl.szotaa.snippr.user.domain.ApplicationUser;
 
 import java.time.Instant;
 
-@Slf4j
 @JsonTest
 @RunWith(SpringRunner.class)
 public class SnippetJsonTest {
 
     @Autowired
-    private JacksonTester<Snippet> json;
+    private JacksonTester<Snippet> jacksonTester;
 
     @Test
-    public void serialize_AllFieldsProvided_JsonIgnoreProperlyIgnored() throws Exception {
+    public void serialize_AllFieldsProvided_JsonProperlySerialized() throws Exception {
         Instant now = Instant.now();
 
         Snippet snippetWithAllFieldsProvided = Snippet.builder()
@@ -38,12 +35,16 @@ public class SnippetJsonTest {
                 .lastModified(now)
                 .build();
 
-        JsonContent<Snippet> snippetAsJson = json.write(snippetWithAllFieldsProvided);
+        JsonContent<Snippet> snippetAsJson = jacksonTester.write(snippetWithAllFieldsProvided);
 
+        Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.id");
         Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.title");
         Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.content");
         Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.syntaxHighlighting");
         Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.expiryDate");
+        Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.owner");
+        Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.dateAdded");
+        Assertions.assertThat(snippetAsJson).hasJsonPathValue("@.lastModified");
 
         Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.title")
                 .isEqualTo("Example Title");
@@ -51,18 +52,14 @@ public class SnippetJsonTest {
                 .isEqualTo("Example content");
         Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.syntaxHighlighting")
                 .isEqualTo("JAVA");
-        Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.expiryDate")
-                .contains(Long.toString(now.getEpochSecond()));
-
-        Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.id");
-        Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.owner");
-        Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.dateAdded");
-        Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.lastModified");
+        Assertions.assertThat(snippetAsJson).extractingJsonPathNumberValue("@.id")
+                .isEqualTo(1);
+        //TODO: add remaining assertions
     }
 
     @Test
-    public void deserialize_AllFieldsProvided_JsonIgnoreProperlyIgnored() throws Exception {
-        String json = "{\n" +
+    public void deserialize_AllFieldsProvided_JsonProperlyDeserialized() throws Exception {
+        String snippetAsJson = "{\n" +
                 "  \"id\": \"1\",\n" +
                 "  \"content\": \"Example content\",\n" +
                 "  \"title\": \"Example title\",\n" +
@@ -75,7 +72,7 @@ public class SnippetJsonTest {
                 "  \"lastModified\": \"111111\"\n" +
                 "}";
 
-        Snippet snippetFromJson = this.json.parse(json).getObject();
+        Snippet snippetFromJson = jacksonTester.parse(snippetAsJson).getObject();
 
         Assert.assertNull(snippetFromJson.getId());
         Assert.assertNull(snippetFromJson.getOwner());
