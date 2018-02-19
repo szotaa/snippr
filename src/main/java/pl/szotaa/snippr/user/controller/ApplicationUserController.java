@@ -27,8 +27,8 @@ public class ApplicationUserController {
 
     private final ApplicationUserService applicationUserService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Void> signUp(@RequestBody ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException {
+    @PostMapping
+    public ResponseEntity<Void> create(@RequestBody ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException {
         applicationUserService.save(applicationUser);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(applicationUser.getId()).toUri();
         return ResponseEntity.created(location).build();

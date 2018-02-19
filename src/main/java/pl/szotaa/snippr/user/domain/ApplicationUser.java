@@ -1,6 +1,7 @@
 package pl.szotaa.snippr.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +34,8 @@ import java.util.Set;
 public class ApplicationUser implements Serializable {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
@@ -48,14 +49,14 @@ public class ApplicationUser implements Serializable {
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
                 joinColumns = @JoinColumn(name = "user", referencedColumnName = "username"),
                 inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role_name"))
     private Set<Role> roles;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<Snippet> snippets;
 }
