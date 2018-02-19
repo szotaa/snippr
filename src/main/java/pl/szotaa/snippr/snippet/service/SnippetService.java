@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
@@ -17,7 +16,6 @@ import pl.szotaa.snippr.user.service.ApplicationUserService;
 import javax.validation.Valid;
 
 @Service
-@Validated
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class SnippetService {
 
