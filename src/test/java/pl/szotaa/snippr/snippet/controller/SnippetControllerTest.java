@@ -1,6 +1,6 @@
 //TODO: rework tests
 
-/*package pl.szotaa.snippr.snippet.controller;
+package pl.szotaa.snippr.snippet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.Is;
@@ -13,15 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithSecurityContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 import pl.szotaa.snippr.snippet.service.SnippetService;
 
-@WithMockUser
+//TODO: fix this
+
 @RunWith(SpringRunner.class)
 @WebMvcTest(SnippetController.class)
 public class SnippetControllerTest {
@@ -47,74 +52,59 @@ public class SnippetControllerTest {
     }
 
     @Test
-    public void createTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/snippet")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(exampleSnippet)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-    }
-
-    @Test
-    public void getByIdSuccessTest() throws Exception {
+    @WithAnonymousUser
+    public void getById_AnonymousUser_200Success() throws Exception {
         Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/snippet/{id}", 1))
+        mockMvc.perform(MockMvcRequestBuilders.get("/snippet/{id}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Is.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title", Is.is("Example Title")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content", Is.is("Example content")));
+
+        Mockito.verify(snippetService, Mockito.times(1)).getById(1L);
     }
 
     @Test
-    public void getByIdFailureTest() throws Exception {
-        Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(null);
+    @WithAnonymousUser
+    public void updateExisting_AnonymousUser_401Unauthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/snippet/{id}", 1))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        Mockito.verify(snippetService, Mockito.never()).update(exampleSnippet);
     }
 
     @Test
-    public void updateSuccessTest() throws Exception {
-        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(true);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
+    @WithMockUser
+    public void updateExisting_Authenticated_200Ok() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(exampleSnippet)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(snippetService, Mockito.times(1)).update(exampleSnippet);
     }
 
     @Test
-    public void updateFailureTest() throws Exception {
-        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(false);
+    @WithAnonymousUser
+    public void deleteExisting_AnonymousUser_401Unauthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/snippet/{id}", 1L))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(exampleSnippet)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        Mockito.verify(snippetService, Mockito.never()).delete(1L);
     }
 
     @Test
-    public void deleteSuccessTest() throws Exception {
-        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(true);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(exampleSnippet)))
+    @WithMockUser
+    public void deleteExisting_Authenticated_200Ok() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/snippet/{id}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(snippetService, Mockito.times(1)).delete(1L);
     }
 
-    @Test
-    public void deleteFailureTest() throws Exception {
-        Mockito.when(snippetService.exists(Mockito.anyLong())).thenReturn(false);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(exampleSnippet)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-    private static String asJsonString(final Object object) {
+    private static String asJsonString(Object object) {
         try{
             return new ObjectMapper().writeValueAsString(object);
         }
@@ -123,4 +113,4 @@ public class SnippetControllerTest {
         }
     }
 
-}*/
+}
