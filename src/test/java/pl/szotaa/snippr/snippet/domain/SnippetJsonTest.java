@@ -1,6 +1,9 @@
 package pl.szotaa.snippr.snippet.domain;
 
+import com.fasterxml.jackson.datatype.jsr310.DecimalUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import pl.szotaa.snippr.user.domain.ApplicationUser;
 
 import java.time.Instant;
 
+@Slf4j
 @JsonTest
 @RunWith(SpringRunner.class)
 public class SnippetJsonTest {
@@ -47,8 +51,8 @@ public class SnippetJsonTest {
                 .isEqualTo("Example content");
         Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.syntaxHighlighting")
                 .isEqualTo("JAVA");
-        /*Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.expiryDate")
-                .isEqualTo(snippetWithAllFieldsProvided.getExpiryDate());*/ //TODO: find out how to verify instant serialization
+        Assertions.assertThat(snippetAsJson).extractingJsonPathStringValue("@.expiryDate")
+                .contains(Long.toString(now.getEpochSecond()));
 
         Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.id");
         Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.owner");
@@ -56,5 +60,31 @@ public class SnippetJsonTest {
         Assertions.assertThat(snippetAsJson).doesNotHaveJsonPathValue("@.lastModified");
     }
 
-    //TODO: deserialization test
+    @Test
+    public void deserialize_AllFieldsProvided_JsonIgnoreProperlyIgnored() throws Exception {
+        String json = "{\n" +
+                "  \"id\": \"1\",\n" +
+                "  \"content\": \"Example content\",\n" +
+                "  \"title\": \"Example title\",\n" +
+                "  \"syntaxHighlighting\": \"JAVA\",\n" +
+                "  \"expiryDate\": \"11111\",\n" +
+                "  \"owner\": {\n" +
+                "    \n" +
+                "  },\n" +
+                "  \"dateAdded\": \"11111\",\n" +
+                "  \"lastModified\": \"111111\"\n" +
+                "}";
+
+        Snippet snippetFromJson = this.json.parse(json).getObject();
+
+        Assert.assertNull(snippetFromJson.getId());
+        Assert.assertNull(snippetFromJson.getOwner());
+        Assert.assertNull(snippetFromJson.getDateAdded());
+        Assert.assertNull(snippetFromJson.getLastModified());
+
+        Assert.assertNotNull(snippetFromJson.getTitle());
+        Assert.assertNotNull(snippetFromJson.getContent());
+        Assert.assertNotNull(snippetFromJson.getSyntaxHighlighting());
+        Assert.assertNotNull(snippetFromJson.getExpiryDate());
+    }
 }
