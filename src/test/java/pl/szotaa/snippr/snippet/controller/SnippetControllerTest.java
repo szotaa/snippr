@@ -1,5 +1,3 @@
-//TODO: rework tests
-
 package pl.szotaa.snippr.snippet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,20 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithSecurityContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 import pl.szotaa.snippr.snippet.service.SnippetService;
 
-//TODO: fix this
-
+@WithMockUser
 @RunWith(SpringRunner.class)
 @WebMvcTest(SnippetController.class)
 public class SnippetControllerTest {
@@ -52,8 +45,17 @@ public class SnippetControllerTest {
     }
 
     @Test
-    @WithAnonymousUser
-    public void getById_AnonymousUser_200Success() throws Exception {
+    public void create_201Created() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/snippet")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(exampleSnippet)))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        Mockito.verify(snippetService, Mockito.times(1)).save(Mockito.any(Snippet.class));
+    }
+
+    @Test
+    public void getById_200Success() throws Exception {
         Mockito.when(snippetService.getById(Mockito.anyLong())).thenReturn(exampleSnippet);
         mockMvc.perform(MockMvcRequestBuilders.get("/snippet/{id}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -61,47 +63,25 @@ public class SnippetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title", Is.is("Example Title")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content", Is.is("Example content")));
 
-        Mockito.verify(snippetService, Mockito.times(1)).getById(1L);
+        Mockito.verify(snippetService, Mockito.times(1)).getById(Mockito.anyLong());
     }
 
     @Test
-    @WithAnonymousUser
-    public void updateExisting_AnonymousUser_401Unauthorized() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(exampleSnippet)))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-
-        Mockito.verify(snippetService, Mockito.never()).update(exampleSnippet);
-    }
-
-    @Test
-    @WithMockUser
-    public void updateExisting_Authenticated_200Ok() throws Exception {
+    public void updateExisting_200Ok() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/snippet/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(exampleSnippet)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(snippetService, Mockito.times(1)).update(exampleSnippet);
+        Mockito.verify(snippetService, Mockito.times(1)).update(Mockito.any(Snippet.class));
     }
 
     @Test
-    @WithAnonymousUser
-    public void deleteExisting_AnonymousUser_401Unauthorized() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/snippet/{id}", 1L))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-
-        Mockito.verify(snippetService, Mockito.never()).delete(1L);
-    }
-
-    @Test
-    @WithMockUser
-    public void deleteExisting_Authenticated_200Ok() throws Exception {
+    public void deleteExisting_200Ok() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/snippet/{id}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(snippetService, Mockito.times(1)).delete(1L);
+        Mockito.verify(snippetService, Mockito.times(1)).delete(Mockito.anyLong());
     }
 
     private static String asJsonString(Object object) {
@@ -112,5 +92,4 @@ public class SnippetControllerTest {
             throw new RuntimeException();
         }
     }
-
 }
