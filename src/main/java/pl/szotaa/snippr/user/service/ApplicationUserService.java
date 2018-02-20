@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.domain.Role;
 import pl.szotaa.snippr.user.exception.ApplicationUserAlreadyExistsException;
@@ -22,7 +21,6 @@ import java.util.Collections;
 
 @Service
 @Transactional
-@Validated
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class ApplicationUserService implements UserDetailsService {
 

@@ -13,9 +13,6 @@ public class NotBeforeCurrentTimeValidator implements ConstraintValidator<NotBef
 
     @Override
     public boolean isValid(Instant instant, ConstraintValidatorContext constraintValidatorContext) {
-        if(instant != null && instant.isBefore(Instant.now())){
-            return false;
-        }
-        return true;
+        return instant == null || !instant.isBefore(Instant.now());
     }
 }

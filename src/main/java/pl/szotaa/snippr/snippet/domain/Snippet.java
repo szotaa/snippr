@@ -1,6 +1,5 @@
 package pl.szotaa.snippr.snippet.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -70,9 +69,6 @@ public class Snippet implements Serializable {
     private Instant lastModified;
 
     public boolean isExpired(){
-        if(expiryDate != null && expiryDate.isBefore(Instant.now())){
-            return true;
-        }
-        return false;
+        return expiryDate != null && expiryDate.isBefore(Instant.now());
     }
 }

@@ -54,7 +54,7 @@ public class ApplicationUserServiceTest {
     }
 
     @Test
-    public void loadByUsername_UsernameExistent_UserReturned() throws Exception {
+    public void loadByUsername_UsernameExistent_UserReturned() {
         Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(applicationUser);
 
         User expected = new User(applicationUser.getUsername(), applicationUser.getPassword(), applicationUser.getRoles());
@@ -64,7 +64,7 @@ public class ApplicationUserServiceTest {
     }
 
     @Test(expected = UsernameNotFoundException.class)
-    public void loadByUsername_UsernameNonExistent_UsernameNotFoundExceptionThrown() throws Exception {
+    public void loadByUsername_UsernameNonExistent_UsernameNotFoundExceptionThrown() {
         Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(null);
         applicationUserService.loadUserByUsername("example_username");
     }

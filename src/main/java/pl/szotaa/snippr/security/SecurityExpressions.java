@@ -18,16 +18,10 @@ public class SecurityExpressions {
     private final ApplicationUserService applicationUserService;
 
     public boolean isSnippetOwner(Long snippetId, Authentication authentication) throws SnippetNotFoundException, SnippetExpiredException {
-        if(snippetService.getById(snippetId).getOwner().getUsername().equals(authentication.getName())){
-            return true;
-        }
-        return false;
+        return snippetService.getById(snippetId).getOwner().getUsername().equals(authentication.getName());
     }
 
     public boolean isHimself(Long applicationUserId, Authentication authentication) throws ApplicationUserNotFoundException {
-        if(applicationUserService.getById(applicationUserId).getUsername().equals(authentication.getName())){
-            return true;
-        }
-        return false;
+        return applicationUserService.getById(applicationUserId).getUsername().equals(authentication.getName());
     }
 }

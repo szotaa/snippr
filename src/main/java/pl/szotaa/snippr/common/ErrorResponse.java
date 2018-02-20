@@ -14,7 +14,7 @@ public class ErrorResponse {
     private String fieldName;
     private String message;
 
-    public ErrorResponse(String fieldName, String message) {
+    private ErrorResponse(String fieldName, String message) {
         this.fieldName = fieldName;
         this.message = message;
     }
