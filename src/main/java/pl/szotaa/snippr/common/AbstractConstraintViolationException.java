@@ -7,7 +7,7 @@ import java.util.Set;
 public abstract class AbstractConstraintViolationException extends Exception {
 
     @Getter
-    protected Set<FieldError> fieldErrors;
+    protected final Set<FieldError> fieldErrors;
 
     public AbstractConstraintViolationException(String message, Set<FieldError> fieldErrors) {
         super(message);

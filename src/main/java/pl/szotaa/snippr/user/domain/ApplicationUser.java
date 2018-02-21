@@ -1,12 +1,13 @@
 package pl.szotaa.snippr.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 import pl.szotaa.snippr.snippet.domain.Snippet;
 
@@ -24,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -32,7 +34,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
-@JsonIgnoreProperties({"password", "snippets", "roles"})
+@JsonIgnoreProperties({"snippets", "roles"})
 public class ApplicationUser implements Serializable {
 
     @Id
@@ -48,6 +50,7 @@ public class ApplicationUser implements Serializable {
 
     @NotNull
     @Length(min = 8, max = 60)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 
@@ -61,6 +64,16 @@ public class ApplicationUser implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<Snippet> snippets;
+
+    @CreationTimestamp
+    @Column(name = "date_added", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Instant dateAdded;
+
+    @UpdateTimestamp
+    @Column(name = "last_modified", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Instant lastModified;
 
     public void update(ApplicationUser updateData) {
         this.username = updateData.getUsername();

@@ -79,7 +79,7 @@ public class SnippetServiceTest {
     @Test
     public void update_ExistentSnippet_SnippetGetsSaved() throws Exception {
         snippet.setId(1L);
-        Mockito.when(snippetRepository.exists(Mockito.anyLong())).thenReturn(true);
+        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(snippet);
         snippetService.update(snippet);
         Mockito.verify(snippetRepository, Mockito.times(1)).save(snippet);
     }

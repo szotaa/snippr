@@ -139,9 +139,15 @@ public class ApplicationUserServiceTest {
 
     @Test
     public void update_UserExistent_ApplicationUserUpdated() throws Exception {
-        Mockito.when(applicationUserRepository.exists(Mockito.anyLong())).thenReturn(true);
+        ApplicationUser updateData = ApplicationUser.builder()
+                .id(1L)
+                .username("updated_username")
+                .password("updated_password")
+                .build();
 
-        applicationUserService.update(applicationUser);
+        Mockito.when(applicationUserRepository.findOne(Mockito.anyLong())).thenReturn(applicationUser);
+
+        applicationUserService.update(updateData);
 
         Mockito.verify(applicationUserRepository, Mockito.times(1)).save(Mockito.any(ApplicationUser.class));
     }
