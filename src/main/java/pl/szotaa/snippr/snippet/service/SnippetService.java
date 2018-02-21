@@ -5,29 +5,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pl.szotaa.snippr.common.FieldError;
 import pl.szotaa.snippr.snippet.domain.Snippet;
+import pl.szotaa.snippr.snippet.exception.SnippetCreationFailedException;
 import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
+import pl.szotaa.snippr.snippet.exception.SnippetUpdateFailedException;
 import pl.szotaa.snippr.snippet.repostiory.SnippetRepository;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
-import javax.validation.Valid;
+import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.Set;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class SnippetService {
 
     private final SnippetRepository snippetRepository;
     private final ApplicationUserService applicationUserService;
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    public void save(@Valid Snippet snippet) throws ApplicationUserNotFoundException {
+    public void save(Snippet snippet) throws ApplicationUserNotFoundException, SnippetCreationFailedException {
         if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)){
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             ApplicationUser currentlyLoggedInUser = applicationUserService.getByUsername(username);
             snippet.setOwner(currentlyLoggedInUser);
         }
+
+        Set<ConstraintViolation<Snippet>> violations = validator.validate(snippet);
+        if(!violations.isEmpty()) {
+            Set<FieldError> fieldErrors = FieldError.toFieldErrorSet(violations);
+            throw new SnippetCreationFailedException(fieldErrors);
+        }
+
         snippetRepository.save(snippet);
     }
 
@@ -42,11 +58,18 @@ public class SnippetService {
         return found;
     }
 
-    public void update(@Valid Snippet snippet) throws SnippetNotFoundException {
-        if(!snippetRepository.exists(snippet.getId())){
-            throw new SnippetNotFoundException(snippet.getId());
+    public void update(Snippet updateData) throws SnippetNotFoundException, SnippetUpdateFailedException {
+        Snippet toBeUpdated = snippetRepository.findOne(updateData.getId());
+        if(toBeUpdated == null){
+            throw new SnippetNotFoundException(updateData.getId());
         }
-        snippetRepository.save(snippet);
+        toBeUpdated.update(updateData);
+        Set<ConstraintViolation<Snippet>> violations = validator.validate(updateData);
+        if(!violations.isEmpty()) {
+            Set<FieldError> fieldErrors = FieldError.toFieldErrorSet(violations);
+            throw new SnippetUpdateFailedException(toBeUpdated.getId(), fieldErrors);
+        }
+        snippetRepository.save(toBeUpdated);
     }
 
     public void delete(Long id) throws SnippetNotFoundException {

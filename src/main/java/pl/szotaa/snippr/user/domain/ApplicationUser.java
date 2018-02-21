@@ -58,4 +58,9 @@ public class ApplicationUser implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<Snippet> snippets;
+
+    public void update(ApplicationUser updateData) {
+        this.username = updateData.getUsername();
+        this.password = updateData.getPassword();
+    }
 }

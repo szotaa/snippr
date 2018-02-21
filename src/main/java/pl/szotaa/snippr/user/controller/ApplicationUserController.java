@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.szotaa.snippr.user.domain.ApplicationUser;
 import pl.szotaa.snippr.user.exception.ApplicationUserAlreadyExistsException;
+import pl.szotaa.snippr.user.exception.ApplicationUserCreationFailedException;
 import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
+import pl.szotaa.snippr.user.exception.ApplicationUserUpdateFailedException;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
 import java.net.URI;
@@ -28,7 +30,7 @@ public class ApplicationUserController {
     private final ApplicationUserService applicationUserService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException {
+    public ResponseEntity<Void> create(@RequestBody ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException, ApplicationUserCreationFailedException {
         applicationUserService.save(applicationUser);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(applicationUser.getId()).toUri();
         return ResponseEntity.created(location).build();
@@ -37,7 +39,7 @@ public class ApplicationUserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
-    public ResponseEntity<ApplicationUser> getUser(@PathVariable Long id) throws ApplicationUserNotFoundException {
+    public ResponseEntity<ApplicationUser> getById(@PathVariable Long id) throws ApplicationUserNotFoundException {
         ApplicationUser result = applicationUserService.getById(id);
         return ResponseEntity.ok(result);
     }
@@ -45,7 +47,7 @@ public class ApplicationUserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
-    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody ApplicationUser applicationUser) throws ApplicationUserNotFoundException {
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody ApplicationUser applicationUser) throws ApplicationUserNotFoundException, ApplicationUserUpdateFailedException {
         applicationUser.setId(id);
         applicationUserService.update(applicationUser);
         return ResponseEntity.ok().build();

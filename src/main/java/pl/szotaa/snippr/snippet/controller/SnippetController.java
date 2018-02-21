@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.szotaa.snippr.snippet.domain.Snippet;
+import pl.szotaa.snippr.snippet.exception.SnippetCreationFailedException;
 import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
+import pl.szotaa.snippr.snippet.exception.SnippetUpdateFailedException;
 import pl.szotaa.snippr.snippet.service.SnippetService;
 import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 
@@ -30,7 +32,7 @@ public class SnippetController {
 
     @PostMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> create(@RequestBody Snippet snippet) throws ApplicationUserNotFoundException {
+    public ResponseEntity<Void> create(@RequestBody Snippet snippet) throws ApplicationUserNotFoundException, SnippetCreationFailedException {
         snippetService.save(snippet);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(snippet.getId()).toUri();
         return ResponseEntity.created(location).build();
@@ -46,7 +48,7 @@ public class SnippetController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isSnippetOwner(#id, authentication)")
-    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet) throws SnippetNotFoundException {
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody Snippet snippet) throws SnippetNotFoundException, SnippetUpdateFailedException {
         snippet.setId(id);
         snippetService.update(snippet);
         return ResponseEntity.ok().build();

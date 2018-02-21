@@ -71,4 +71,11 @@ public class Snippet implements Serializable {
     public boolean isExpired(){
         return expiryDate != null && expiryDate.isBefore(Instant.now());
     }
+
+    public void update(Snippet updateData){
+        title = updateData.getTitle();
+        content = updateData.getContent();
+        syntaxHighlighting = updateData.getSyntaxHighlighting();
+        expiryDate = updateData.getExpiryDate();
+    }
 }
