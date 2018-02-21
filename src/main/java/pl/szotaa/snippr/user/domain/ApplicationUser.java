@@ -1,5 +1,7 @@
 package pl.szotaa.snippr.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +32,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
+@JsonIgnoreProperties({"password", "snippets", "roles"})
 public class ApplicationUser implements Serializable {
 
     @Id
@@ -51,8 +54,8 @@ public class ApplicationUser implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
-                joinColumns = @JoinColumn(name = "user", referencedColumnName = "username"),
-                inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role_name"))
+                joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
