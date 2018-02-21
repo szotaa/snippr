@@ -1,6 +1,5 @@
 package pl.szotaa.snippr.user.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +11,6 @@ import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 import pl.szotaa.snippr.user.exception.ApplicationUserUpdateFailedException;
 
 @RestControllerAdvice
-@Slf4j
 public class ApplicationUserControllerAdvice {
 
     @ExceptionHandler(ApplicationUserNotFoundException.class)
@@ -27,7 +25,6 @@ public class ApplicationUserControllerAdvice {
 
     @ExceptionHandler(ApplicationUserCreationFailedException.class)
     public ResponseEntity<ErrorResponse> handleApplicationUserCreationFailedException(ApplicationUserCreationFailedException exception){
-        log.info("handler caled");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(exception));
     }
 
