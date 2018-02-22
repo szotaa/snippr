@@ -37,7 +37,7 @@ public class ApplicationUserServiceTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private Role exampleRole;
-    private ApplicationUser applicationUser;
+    private ApplicationUser exampleUser;
 
     @Before
     public void init(){
@@ -45,7 +45,7 @@ public class ApplicationUserServiceTest {
         exampleRole.setId(2L);
         exampleRole.setRoleName("ROLE_USER");
 
-        applicationUser = ApplicationUser.builder()
+        exampleUser = ApplicationUser.builder()
                 .id(1L)
                 .username("example_username")
                 .password("example_password")
@@ -55,9 +55,9 @@ public class ApplicationUserServiceTest {
 
     @Test
     public void loadByUsername_UsernameExistent_UserReturned() {
-        Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(applicationUser);
+        Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(exampleUser);
 
-        User expected = new User(applicationUser.getUsername(), applicationUser.getPassword(), applicationUser.getRoles());
+        User expected = new User(exampleUser.getUsername(), exampleUser.getPassword(), exampleUser.getRoles());
         User actual = (User) applicationUserService.loadUserByUsername("example_username");
 
         Assert.assertEquals(expected, actual);
@@ -75,7 +75,7 @@ public class ApplicationUserServiceTest {
         Mockito.when(roleRepository.findOne(Mockito.anyLong())).thenReturn(exampleRole);
         Mockito.when(bCryptPasswordEncoder.encode(Mockito.anyString())).thenReturn("ENCODED_PASSWORD");
 
-        applicationUserService.save(applicationUser);
+        applicationUserService.save(exampleUser);
 
         Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode(Mockito.anyString());
         Mockito.verify(roleRepository, Mockito.times(1)).findOne(Mockito.anyLong());
@@ -88,7 +88,7 @@ public class ApplicationUserServiceTest {
     public void save_UsernameExistent_ApplicationUserAlreadyExistsExceptionThrown() throws Exception {
         Mockito.when(applicationUserRepository.existsByUsername(Mockito.anyString())).thenReturn(true);
 
-        applicationUserService.save(applicationUser);
+        applicationUserService.save(exampleUser);
 
         Mockito.verify(roleRepository, Mockito.never()).findOne(Mockito.anyLong());
         Mockito.verify(bCryptPasswordEncoder, Mockito.never()).encode(Mockito.anyString());
@@ -98,11 +98,11 @@ public class ApplicationUserServiceTest {
     @Test
     public void getByUsername_UserExistent_ApplicationUserReturned() throws Exception {
         Mockito.when(applicationUserRepository.existsByUsername(Mockito.anyString())).thenReturn(true);
-        Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(applicationUser);
+        Mockito.when(applicationUserRepository.findByUsername(Mockito.anyString())).thenReturn(exampleUser);
 
         ApplicationUser found = applicationUserService.getByUsername("example_username");
 
-        Assert.assertEquals(applicationUser, found);
+        Assert.assertEquals(exampleUser, found);
 
         Mockito.verify(applicationUserRepository, Mockito.times(1)).findByUsername(Mockito.anyString());
     }
@@ -119,11 +119,11 @@ public class ApplicationUserServiceTest {
     @Test
     public void getById_UserExistent_ApplicationUserReturned() throws Exception {
         Mockito.when(applicationUserRepository.exists(Mockito.anyLong())).thenReturn(true);
-        Mockito.when(applicationUserRepository.findOne(Mockito.anyLong())).thenReturn(applicationUser);
+        Mockito.when(applicationUserRepository.findOne(Mockito.anyLong())).thenReturn(exampleUser);
 
         ApplicationUser found = applicationUserService.getById(1L);
 
-        Assert.assertEquals(applicationUser, found);
+        Assert.assertEquals(exampleUser, found);
 
         Mockito.verify(applicationUserRepository, Mockito.times(1)).findOne(Mockito.anyLong());
     }
@@ -145,7 +145,7 @@ public class ApplicationUserServiceTest {
                 .password("updated_password")
                 .build();
 
-        Mockito.when(applicationUserRepository.findOne(Mockito.anyLong())).thenReturn(applicationUser);
+        Mockito.when(applicationUserRepository.findOne(Mockito.anyLong())).thenReturn(exampleUser);
 
         applicationUserService.update(updateData);
 
@@ -156,7 +156,7 @@ public class ApplicationUserServiceTest {
     public void update_UserNonExistent_ApplicationUserNotFoundExceptionThrown() throws Exception {
         Mockito.when(applicationUserRepository.exists(Mockito.anyLong())).thenReturn(false);
 
-        applicationUserService.update(applicationUser);
+        applicationUserService.update(exampleUser);
 
         Mockito.verify(applicationUserRepository, Mockito.never()).save(Mockito.any(ApplicationUser.class));
     }

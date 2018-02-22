@@ -30,11 +30,11 @@ public class SnippetServiceTest {
     @Mock
     private ApplicationUserService applicationUserService;
 
-    private Snippet snippet;
+    private Snippet exampleSnippet;
 
     @Before
     public void init(){
-        snippet = Snippet.builder()
+        exampleSnippet = Snippet.builder()
                 .title("example title")
                 .content("example content")
                 .build();
@@ -43,24 +43,24 @@ public class SnippetServiceTest {
     @Test
     @WithAnonymousUser
     public void save_AnonymousUser_SnippetGetsSaved() throws Exception {
-        snippetService.save(snippet);
+        snippetService.save(exampleSnippet);
         Mockito.verify(applicationUserService, Mockito.never()).getByUsername(Mockito.anyString());
-        Mockito.verify(snippetRepository, Mockito.times(1)).save(snippet);
+        Mockito.verify(snippetRepository, Mockito.times(1)).save(exampleSnippet);
     }
 
     @Test
     @WithMockUser
     public void save_Authenticated_SnippetGetsSaved() throws Exception {
-        snippetService.save(snippet);
+        snippetService.save(exampleSnippet);
         Mockito.verify(applicationUserService, Mockito.times(1)).getByUsername(Mockito.anyString());
-        Mockito.verify(snippetRepository, Mockito.times(1)).save(snippet);
+        Mockito.verify(snippetRepository, Mockito.times(1)).save(exampleSnippet);
     }
 
     @Test
     public void getById_ExistingId_SnippetGetsReturned() throws Exception {
-        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(snippet);
+        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(exampleSnippet);
         Snippet found = snippetService.getById(1L);
-        Assert.assertEquals(snippet, found);
+        Assert.assertEquals(exampleSnippet, found);
     }
 
     @Test(expected = SnippetNotFoundException.class)
@@ -71,25 +71,25 @@ public class SnippetServiceTest {
 
     @Test(expected = SnippetExpiredException.class)
     public void getById_ExistentIdExpiredSnippet_SnippetExpiredException() throws Exception {
-        snippet.setExpiryDate(Instant.now().minusSeconds(1));
-        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(snippet);
+        exampleSnippet.setExpiryDate(Instant.now().minusSeconds(1));
+        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(exampleSnippet);
         snippetService.getById(1L);
     }
 
     @Test
     public void update_ExistentSnippet_SnippetGetsSaved() throws Exception {
-        snippet.setId(1L);
-        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(snippet);
-        snippetService.update(snippet);
-        Mockito.verify(snippetRepository, Mockito.times(1)).save(snippet);
+        exampleSnippet.setId(1L);
+        Mockito.when(snippetRepository.findOne(Mockito.anyLong())).thenReturn(exampleSnippet);
+        snippetService.update(exampleSnippet);
+        Mockito.verify(snippetRepository, Mockito.times(1)).save(exampleSnippet);
     }
 
     @Test(expected = SnippetNotFoundException.class)
     public void update_NonExistentSnippet_SnippetNotFoundExceptionThrown() throws Exception {
-        snippet.setId(1L);
+        exampleSnippet.setId(1L);
         Mockito.when(snippetRepository.exists(Mockito.anyLong())).thenReturn(false);
-        snippetService.update(snippet);
-        Mockito.verify(snippetRepository, Mockito.never()).save(snippet);
+        snippetService.update(exampleSnippet);
+        Mockito.verify(snippetRepository, Mockito.never()).save(exampleSnippet);
     }
 
     @Test

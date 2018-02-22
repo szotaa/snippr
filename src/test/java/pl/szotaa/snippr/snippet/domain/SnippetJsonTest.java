@@ -54,7 +54,6 @@ public class SnippetJsonTest {
                 .isEqualTo("JAVA");
         Assertions.assertThat(snippetAsJson).extractingJsonPathNumberValue("@.id")
                 .isEqualTo(1);
-        //TODO: add remaining assertions
     }
 
     @Test

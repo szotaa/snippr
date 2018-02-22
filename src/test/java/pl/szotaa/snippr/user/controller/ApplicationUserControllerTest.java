@@ -62,8 +62,6 @@ public class ApplicationUserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Is.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username", Is.is("example_user")));
 
-                //TODO: more jsonPath assertions
-
         Mockito.verify(userService, Mockito.times(1)).getById(Mockito.anyLong());
     }
 
