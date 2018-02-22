@@ -41,11 +41,11 @@ Snippr is a "pastebin like" REST api. This is my first ever published Spring Boo
 
   - **POST** `/snippet` - creates new snippet
 
-  - **GET** `/user/{id}` - returns snippet with specified id
+  - **GET** `/snippet/{id}` - returns snippet with specified id
 
-  - **PUT** `/user/{id}` - updates snippet with specified id (secured)
+  - **PUT** `/snippet/{id}` - updates snippet with specified id (secured)
 
-  - **DELETE** `/user/{id}` - deletes snippet with specified id (secured)
+  - **DELETE** `/snippet/{id}` - deletes snippet with specified id (secured)
 
 ## Resources
 		
