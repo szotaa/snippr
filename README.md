@@ -137,6 +137,17 @@ Launching Snippr with `swagger` profile will enable `/api-docs` endpoint contain
 	result in adding this snippet as yours (you wil be able to delete and edit it)
 	Fields exipryDate and syntaxHighlighting are optional.
 
+## Default admin creditentials
+
+To log in as admin use:
+>**POST** `/user/login`
+> {
+> "username": "admin",
+	"password": "hehe"
+> }
+
+Admin account is inserted on database creation from resources/import.sql file.
+
 ## Bugs
 
 - Signing JWT claims throws an exception
