@@ -3,7 +3,7 @@
 Snippr is a "pastebin like" REST api. This is my first ever published Spring Boot application which was written solely to practice my coding skils. Every code review and constructive criticism is much welcomed.
 
 
-# Features
+## Features
 
 - Adding, creating, modifying and deleting snippets
 - Account management
@@ -69,6 +69,9 @@ Snippr is a "pastebin like" REST api. This is my first ever published Spring Boo
 	owner - read-only, snippet owner id (null = posted by anonymous)
 	dateAdded - read-only, epoch timestamp, date at whch snippet was added
 	lastModified - read-only, epoch timestamp, date at which snippet was last modified
+	
+	supported syntaxHighlighting values can be found in ProgrammingLanguages enum in 
+	src/main/java/pl/szotaa/snippr/snippet/validation/ProgrammingLanguageValidator.java
 
 
 ----------
@@ -83,9 +86,67 @@ Snippr is a "pastebin like" REST api. This is my first ever published Spring Boo
     }
     
     id - read-only, user id
-    username - read-write, username (not null)
-    password - write-only, pasword (not null)
+    username - read-write, username (not null, min 5, max 50)
+    password - write-only, pasword (not null, min 8, max 60)
 	dateAdded - read-only, epoch timestamp, date at whch user registred
 	lastModified - read-only, epoch timestamp, date at which user was last modified
 	
 			
+## How to launch
+
+Snippr needs 3 env variables to launch properly:
+
+- `DB_URL` - database connection url (for example: jdbc:mysql://127.0.0.1:3306/snippr )
+- `DB_USERNAME` - database conection username
+- `DB_PASSWORD` - database connection password
+
+
+Launching Snippr with `swagger` profile will enable `/api-docs` endpoint containing swagger2 json.
+
+## Example usage
+
+**Register new account:**	
+
+> **POST** `/user`
+> {
+> "username": "exampleUsername",
+	"password": "examplePassword"
+> }
+
+**Log in:**
+
+>**POST** `/user/login`
+> {
+> "username": "exampleUsername",
+	"password": "examplePassword"
+> }
+
+	This wil return JWT string in response Authorization header
+
+**Add new Snippet:**
+
+>**POST** `/snippet`
+> {
+  "title": "example title",
+  "content": "example content"
+  "expiryDate": "1577841071",
+  "syntaxHighlighting": "JAVA"
+}
+
+	Adding Authorization header containing your JWT token from /user/login will 
+	result in adding this snippet as yours (you wil be able to delete and edit it)
+	Fields exipryDate and syntaxHighlighting are optional.
+
+## Bugs
+
+- Signing JWT claims throws an exception
+
+## TODO
+
+- Improve documentation
+
+- More unit tests
+
+- Integration tests
+
+- Improve error handling
