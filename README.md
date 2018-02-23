@@ -41,11 +41,11 @@ Snippr is a "pastebin like" REST api. This is my first ever published Spring Boo
 
   - **POST** `/snippet` - creates new snippet
 
-  - **GET** `/user/{id}` - returns snippet with specified id
+  - **GET** `/snippet/{id}` - returns snippet with specified id
 
-  - **PUT** `/user/{id}` - updates snippet with specified id (secured)
+  - **PUT** `/snippet/{id}` - updates snippet with specified id (secured)
 
-  - **DELETE** `/user/{id}` - deletes snippet with specified id (secured)
+  - **DELETE** `/snippet/{id}` - deletes snippet with specified id (secured)
 
 ## Resources
 		
@@ -136,6 +136,17 @@ Launching Snippr with `swagger` profile will enable `/api-docs` endpoint contain
 	Adding Authorization header containing your JWT token from /user/login will 
 	result in adding this snippet as yours (you wil be able to delete and edit it)
 	Fields exipryDate and syntaxHighlighting are optional.
+
+## Default admin creditentials
+
+To log in as admin use:
+>**POST** `/user/login`
+> {
+> "username": "admin",
+	"password": "hehe"
+> }
+
+Admin account is inserted on database creation from resources/import.sql file.
 
 ## Bugs
 
