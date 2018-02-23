@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.user.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +26,7 @@ import java.util.Set;
 
 @Service
 @Transactional
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
+@RequiredArgsConstructor
 public class ApplicationUserService implements UserDetailsService {
 
     private final ApplicationUserRepository applicationUserRepository;

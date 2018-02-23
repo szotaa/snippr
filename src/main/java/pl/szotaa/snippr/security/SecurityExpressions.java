@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.security;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
@@ -11,7 +10,7 @@ import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
 import pl.szotaa.snippr.user.service.ApplicationUserService;
 
 @Component
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
+@RequiredArgsConstructor
 public class SecurityExpressions {
 
     private final SnippetService snippetService;

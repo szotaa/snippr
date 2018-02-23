@@ -1,7 +1,6 @@
 package pl.szotaa.snippr.user.controller;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +23,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/user")
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
+@RequiredArgsConstructor
 public class ApplicationUserController {
 
     private final ApplicationUserService applicationUserService;
