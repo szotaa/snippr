@@ -14,7 +14,7 @@ import pl.szotaa.snippr.snippet.domain.Snippet;
 import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.repostiory.SnippetRepository;
-import pl.szotaa.snippr.user.service.ApplicationUserService;
+import pl.szotaa.snippr.user.service.UserService;
 
 import java.time.Instant;
 
@@ -28,7 +28,7 @@ public class SnippetServiceTest {
     private SnippetRepository snippetRepository;
 
     @Mock
-    private ApplicationUserService applicationUserService;
+    private UserService userService;
 
     private Snippet exampleSnippet;
 
@@ -44,7 +44,7 @@ public class SnippetServiceTest {
     @WithAnonymousUser
     public void save_AnonymousUser_SnippetGetsSaved() throws Exception {
         snippetService.save(exampleSnippet);
-        Mockito.verify(applicationUserService, Mockito.never()).getByUsername(Mockito.anyString());
+        Mockito.verify(userService, Mockito.never()).getByUsername(Mockito.anyString());
         Mockito.verify(snippetRepository, Mockito.times(1)).save(exampleSnippet);
     }
 
@@ -52,7 +52,7 @@ public class SnippetServiceTest {
     @WithMockUser
     public void save_Authenticated_SnippetGetsSaved() throws Exception {
         snippetService.save(exampleSnippet);
-        Mockito.verify(applicationUserService, Mockito.times(1)).getByUsername(Mockito.anyString());
+        Mockito.verify(userService, Mockito.times(1)).getByUsername(Mockito.anyString());
         Mockito.verify(snippetRepository, Mockito.times(1)).save(exampleSnippet);
     }
 

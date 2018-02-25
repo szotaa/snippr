@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import pl.szotaa.snippr.snippet.validation.NotBeforeCurrentTime;
 import pl.szotaa.snippr.snippet.validation.ProgrammingLanguage;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
+import pl.szotaa.snippr.user.domain.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,7 +56,7 @@ public class Snippet implements Serializable {
     @ManyToOne
     @JoinColumn(name = "owner_user_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private ApplicationUser owner;
+    private User owner;
 
     @CreationTimestamp
     @Column(name = "date_added", nullable = false)

@@ -18,7 +18,7 @@ import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.exception.SnippetUpdateFailedException;
 import pl.szotaa.snippr.snippet.service.SnippetService;
-import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
+import pl.szotaa.snippr.user.exception.UserNotFoundException;
 
 import java.net.URI;
 
@@ -31,7 +31,7 @@ public class SnippetController {
 
     @PostMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> create(@RequestBody Snippet snippet) throws ApplicationUserNotFoundException, SnippetCreationFailedException {
+    public ResponseEntity<Void> create(@RequestBody Snippet snippet) throws UserNotFoundException, SnippetCreationFailedException {
         snippetService.save(snippet);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(snippet.getId()).toUri();
         return ResponseEntity.created(location).build();

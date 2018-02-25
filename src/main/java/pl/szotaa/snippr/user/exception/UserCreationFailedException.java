@@ -5,9 +5,9 @@ import pl.szotaa.snippr.common.FieldError;
 
 import java.util.Set;
 
-public class ApplicationUserCreationFailedException extends AbstractConstraintViolationException {
+public class UserCreationFailedException extends AbstractConstraintViolationException {
 
-    public ApplicationUserCreationFailedException(Set<FieldError> fieldErrors) {
+    public UserCreationFailedException(Set<FieldError> fieldErrors) {
         super("Failed to create new application user", fieldErrors);
     }
 }

@@ -8,8 +8,8 @@ import pl.szotaa.snippr.snippet.domain.SnippetJsonTest;
 import pl.szotaa.snippr.snippet.service.SnippetServiceTest;
 import pl.szotaa.snippr.snippet.validation.NotBeforeCurrentTimeValidatorTest;
 import pl.szotaa.snippr.snippet.validation.ProgrammingLanguageValidatorTest;
-import pl.szotaa.snippr.user.controller.ApplicationUserControllerTest;
-import pl.szotaa.snippr.user.service.ApplicationUserServiceTest;
+import pl.szotaa.snippr.user.controller.UserControllerTest;
+import pl.szotaa.snippr.user.service.UserServiceTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -18,8 +18,8 @@ import pl.szotaa.snippr.user.service.ApplicationUserServiceTest;
 		SnippetServiceTest.class,
 		NotBeforeCurrentTimeValidatorTest.class,
 		ProgrammingLanguageValidatorTest.class,
-		ApplicationUserControllerTest.class,
-		ApplicationUserServiceTest.class
+		UserControllerTest.class,
+		UserServiceTest.class
 })
 public class SnipprApplicationTests {
 

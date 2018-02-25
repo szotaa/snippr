@@ -1,8 +1,6 @@
 package pl.szotaa.snippr.snippet.service;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -13,9 +11,9 @@ import pl.szotaa.snippr.snippet.exception.SnippetExpiredException;
 import pl.szotaa.snippr.snippet.exception.SnippetNotFoundException;
 import pl.szotaa.snippr.snippet.exception.SnippetUpdateFailedException;
 import pl.szotaa.snippr.snippet.repostiory.SnippetRepository;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
-import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
-import pl.szotaa.snippr.user.service.ApplicationUserService;
+import pl.szotaa.snippr.user.domain.User;
+import pl.szotaa.snippr.user.exception.UserNotFoundException;
+import pl.szotaa.snippr.user.service.UserService;
 
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
@@ -29,13 +27,13 @@ import java.util.Set;
 public class SnippetService {
 
     private final SnippetRepository snippetRepository;
-    private final ApplicationUserService applicationUserService;
+    private final UserService userService;
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    public void save(Snippet snippet) throws ApplicationUserNotFoundException, SnippetCreationFailedException {
+    public void save(Snippet snippet) throws UserNotFoundException, SnippetCreationFailedException {
         if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)){
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            ApplicationUser currentlyLoggedInUser = applicationUserService.getByUsername(username);
+            User currentlyLoggedInUser = userService.getByUsername(username);
             snippet.setOwner(currentlyLoggedInUser);
         }
 

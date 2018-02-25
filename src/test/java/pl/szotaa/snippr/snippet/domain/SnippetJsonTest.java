@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
+import pl.szotaa.snippr.user.domain.User;
 
 import java.time.Instant;
 
@@ -30,7 +30,7 @@ public class SnippetJsonTest {
                 .content("Example content")
                 .syntaxHighlighting("JAVA")
                 .expiryDate(now.plusSeconds(1))
-                .owner(new ApplicationUser())
+                .owner(new User())
                 .dateAdded(now)
                 .lastModified(now)
                 .build();

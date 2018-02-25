@@ -2,11 +2,11 @@ package pl.szotaa.snippr.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
+import pl.szotaa.snippr.user.domain.User;
 
 @Repository
-public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    ApplicationUser findByUsername(String username);
+    User findByUsername(String username);
     boolean existsByUsername(String username);
 }

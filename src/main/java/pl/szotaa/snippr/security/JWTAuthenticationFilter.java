@@ -9,9 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
+import pl.szotaa.snippr.user.domain.User;
 import pl.szotaa.snippr.user.domain.Role;
 
 import javax.servlet.FilterChain;
@@ -35,8 +34,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         try{
-            ApplicationUser credentials = new ObjectMapper()
-                    .readValue(request.getInputStream(), ApplicationUser.class);
+            User credentials = new ObjectMapper()
+                    .readValue(request.getInputStream(), User.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -58,7 +57,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) {
 
 
-        User user = (User) authResult.getPrincipal();
+        org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
 
         String token = Jwts.builder()
                 .setClaims(buildClaims(user))
@@ -68,7 +67,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + token);
     }
 
-    private Claims buildClaims(User user){
+    private Claims buildClaims(org.springframework.security.core.userdetails.User user){
         Claims claims = Jwts.claims();
         claims.setSubject(user.getUsername());
         claims.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME));

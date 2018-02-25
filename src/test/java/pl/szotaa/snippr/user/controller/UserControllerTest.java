@@ -16,28 +16,28 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
-import pl.szotaa.snippr.user.service.ApplicationUserService;
+import pl.szotaa.snippr.user.domain.User;
+import pl.szotaa.snippr.user.service.UserService;
 
 @WithMockUser
 @RunWith(SpringRunner.class)
-@WebMvcTest(ApplicationUserController.class)
-public class ApplicationUserControllerTest {
+@WebMvcTest(UserController.class)
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @InjectMocks
-    private ApplicationUserController userController;
+    private UserController userController;
 
     @MockBean
-    private ApplicationUserService userService;
+    private UserService userService;
 
-    private ApplicationUser exampleUser;
+    private User exampleUser;
 
     @Before
     public void init(){
-        exampleUser = ApplicationUser.builder()
+        exampleUser = User.builder()
                 .id(1L)
                 .username("example_user")
                 .build();
@@ -50,7 +50,7 @@ public class ApplicationUserControllerTest {
                 .content(asJsonString(exampleUser)))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        Mockito.verify(userService, Mockito.times(1)).save(Mockito.any(ApplicationUser.class));
+        Mockito.verify(userService, Mockito.times(1)).save(Mockito.any(User.class));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ApplicationUserControllerTest {
                 .content(asJsonString(exampleUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(userService, Mockito.times(1)).update(Mockito.any(ApplicationUser.class));
+        Mockito.verify(userService, Mockito.times(1)).update(Mockito.any(User.class));
     }
 
     @Test

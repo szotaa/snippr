@@ -35,7 +35,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "user")
 @JsonIgnoreProperties({"snippets", "roles"})
-public class ApplicationUser implements Serializable {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,7 +75,7 @@ public class ApplicationUser implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant lastModified;
 
-    public void update(ApplicationUser updateData) {
+    public void update(User updateData) {
         this.username = updateData.getUsername();
         this.password = updateData.getPassword();
     }

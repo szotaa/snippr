@@ -12,51 +12,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.szotaa.snippr.user.domain.ApplicationUser;
-import pl.szotaa.snippr.user.exception.ApplicationUserAlreadyExistsException;
-import pl.szotaa.snippr.user.exception.ApplicationUserCreationFailedException;
-import pl.szotaa.snippr.user.exception.ApplicationUserNotFoundException;
-import pl.szotaa.snippr.user.exception.ApplicationUserUpdateFailedException;
-import pl.szotaa.snippr.user.service.ApplicationUserService;
+import pl.szotaa.snippr.user.domain.User;
+import pl.szotaa.snippr.user.exception.UserAlreadyExistsException;
+import pl.szotaa.snippr.user.exception.UserCreationFailedException;
+import pl.szotaa.snippr.user.exception.UserNotFoundException;
+import pl.szotaa.snippr.user.exception.UserUpdateFailedException;
+import pl.szotaa.snippr.user.service.UserService;
 
 import java.net.URI;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-public class ApplicationUserController {
+public class UserController {
 
-    private final ApplicationUserService applicationUserService;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody ApplicationUser applicationUser) throws ApplicationUserAlreadyExistsException, ApplicationUserCreationFailedException {
-        applicationUserService.save(applicationUser);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(applicationUser.getId()).toUri();
+    public ResponseEntity<Void> create(@RequestBody User user) throws UserAlreadyExistsException, UserCreationFailedException {
+        userService.save(user);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
-    public ResponseEntity<ApplicationUser> getById(@PathVariable Long id) throws ApplicationUserNotFoundException {
-        ApplicationUser result = applicationUserService.getById(id);
+    public ResponseEntity<User> getById(@PathVariable Long id) throws UserNotFoundException {
+        User result = userService.getById(id);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
-    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody ApplicationUser applicationUser) throws ApplicationUserNotFoundException, ApplicationUserUpdateFailedException {
-        applicationUser.setId(id);
-        applicationUserService.update(applicationUser);
+    public ResponseEntity<Void> updateExisting(@PathVariable Long id, @RequestBody User user) throws UserNotFoundException, UserUpdateFailedException {
+        user.setId(id);
+        userService.update(user);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or " +
             "hasRole('ROLE_USER') and @securityExpressions.isHimself(#id, authentication)")
-    public ResponseEntity<Void> deleteExisting(@PathVariable Long id) throws ApplicationUserNotFoundException {
-        applicationUserService.delete(id);
+    public ResponseEntity<Void> deleteExisting(@PathVariable Long id) throws UserNotFoundException {
+        userService.delete(id);
         return ResponseEntity.ok().build();
     }
 
